@@ -28,24 +28,10 @@
                             ],
                             attribution: 'OpenStreetMap contributors',
                         },
-                        martin_polygons: {
+                        spatial_data: {
                             type: 'vector',
                             tiles: [
-                                'http://localhost/martin/polygons/{z}/{x}/{y}',
-                            ],
-                            maxzoom: 14,
-                        },
-                        martin_points: {
-                            type: 'vector',
-                            tiles: [
-                                'http://localhost/martin/points/{z}/{x}/{y}',
-                            ],
-                            maxzoom: 12,
-                        },
-                        martin_lines: {
-                            type: 'vector',
-                            tiles: [
-                                'http://localhost/martin/n06_22_highwaysection/{z}/{x}/{y}',
+                                'http://localhost/martin/spatial_data/{z}/{x}/{y}',
                             ],
                         },
                     },
@@ -56,55 +42,33 @@
                             source: 'osm',
                         },
                         {
-                            id: 'polygons',
-                            source: 'martin_polygons',
-                            'source-layer': 'admin',
-                            type: 'fill',
+                            id: 'spatial_points',
+                            source: 'spatial_data',
+                            'source-layer': 'spatial_data',
+                            type: 'circle',
                             paint: {
-                                'fill-color': '#f00',
-                                'fill-opacity': 0.5,
+                                'circle-color': '#ff0000',
+                                'circle-radius': 10,
                             },
-                        },
-                        {
-                            id: 'lines',
-                            source: 'martin_lines',
-                            'source-layer': 'n06_22_highwaysection',
-                            type: 'line',
-                            paint: {
-                                'line-color': '#0f0',
-                                'line-width': 2,
-                            },
-                        },
-                        {
-                            id: 'points',
-                            source: 'martin_points',
-                            'source-layer': 'P2921',
-                            type: 'symbol',
-                            layout: {
-                                'icon-image': 'college-JP',
-                                'icon-size': 1.5,
-                            },
-                        },
-                        {
-                            id: 'points-labels',
-                            source: 'martin_points',
-                            'source-layer': 'P2921',
-                            type: 'symbol',
-                            layout: {
-                                'text-field': ['get', 'P29_004'],
-                                'text-size': 16,
-                                'text-anchor': 'top',
-                                'text-offset': [0, 1],
-                                'text-font': ['azukifontP Regular'],
-                            },
-                            paint: {
-                                'text-color': '#000',
-                                'text-halo-color': '#fff',
-                                'text-halo-width': 2,
-                            },
-                        },
+                        }
                     ],
                 },
+            });
+
+            map.on('load', () => {
+
+                map.on('click', 'spatial_points', (e) => {
+
+                    console.log(e.features);
+
+                    const coordinates = e.features[0].geometry.coordinates.slice();
+                    const description = e.features[0].properties.name;
+
+                    new maplibregl.Popup()
+                        .setLngLat(coordinates)
+                        .setHTML(description)
+                        .addTo(map);
+                });
             });
         </script>
     </body>
